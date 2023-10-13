@@ -104,7 +104,8 @@ class HTTPClient(object):
         
         #Connect to host and port and sendall request data 
         self.connect(host, port)
-        request = "GET" + " " + path + " " +"HTTP/1.1\r\n" + "Host:" + " " + host + "\r\n" + "Connection: close\r\n\r\n"
+        #request = "GET" + " " + path + " " +"HTTP/1.1\r\n" + "Host:" + " " + host + "\r\n" + "Connection: close\r\n\r\n" #This is the brute force method
+        request = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nConnection: close\r\n\r\n"
         self.sendall(request)
 
         #Get the response data and close the socket
@@ -142,12 +143,13 @@ class HTTPClient(object):
         
         #Connect to host and port and Sendall data
         self.connect(host,port)
-        postData = "" #Get the PostData
+        postContent = "" #Get the Post Content
         if args is None:
-            postData = ""
+            postContent = ""
         else:
-            postData = urllib.parse.urlencode(args)
-        request = "POST" + " " + path + " " + "HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length:" + " " + str(len(postData)) + "\r\n" + "Connection: close\r\n\r\n" + postData
+            postContent = urllib.parse.urlencode(args)
+        #request = "POST" + " " + path + " " + "HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Content-Type: application/x-www-form-urlencoded\r\n" + "Content-Length:" + " " + str(len(postContent)) + "\r\n" + "Connection: close\r\n\r\n" + postContent #This is the brute force method
+        request = f"POST {path} HTTP/1.1\r\nHost: {host}\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: {len(postContent)}\r\nConnection: close\r\n\r\n" + postContent
         self.sendall(request)
 
         #Get the response data and close the socket
@@ -157,6 +159,7 @@ class HTTPClient(object):
         #Get the http code and the body content
         code = self.get_code(response)
         body = self.get_body(response)
+        
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
